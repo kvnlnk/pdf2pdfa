@@ -1,0 +1,14 @@
+**/bin
+**/generated-model/
+**/target/
+.idea/*
+*.iml
+
+# Eclipse artefacts
+**/.project
+**/.settings
+**/.classpath
+
+# Maven stuff
+/target/
+**/pom.xml.versionsBackup
