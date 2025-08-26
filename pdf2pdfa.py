@@ -13,6 +13,7 @@ parser = argparse.ArgumentParser(
 parser.add_argument("-i", "--input", help="Input PDF file with path")
 # Optional arguments
 parser.add_argument("-o", "--output", help="Output path for the converted PDF/A-1B file.\n Default will be the current directory + '/[input_filename]_pdfa.pdf'")
+parser.add_argument("-t", "--type", type=str, choices=["profile", "independent"], default="profile", help="Whether to use a color profile or device independent color.")
 parser.add_argument("-v", "--version", type=int, choices=[1, 2, 3], default=1, help="PDF/A version (1, 2, or 3). Default is 1.")
 
 args = parser.parse_args()
@@ -23,7 +24,7 @@ def convert_pdf_to_pdfa(input_path, output_path):
         output_path = os.path.join(os.getcwd(), f"{base}_pdfa.pdf")
         
     # Construct the Ghostscript command
-    gs_command = get_gs_command("pdf2pdfa_with_profile", args.version, input_path, output_path)
+    gs_command = get_gs_command(args.type, args.version, input_path, output_path)
 
     # Execute the Ghostscript command
     try:

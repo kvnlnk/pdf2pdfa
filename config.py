@@ -16,7 +16,7 @@ def get_gs_command(command_type:str, version:int, input_path:str, output_path:st
     """
 
     commands = {
-        "pdf2pdfa_with_profile": [
+        "profile": [
             "gswin64c",
             "--permit-file-read=C:\\source\\pdf2pdfa\\srgb.icc",
             "--permit-file-read=C:\\source\\pdf2pdfa\\PDFA_def.ps",
@@ -34,7 +34,7 @@ def get_gs_command(command_type:str, version:int, input_path:str, output_path:st
             "C:\\source\\pdf2pdfa\\PDFA_def.ps",
             input_path
         ],
-        "pdf2pdfa_with_independent_color": [
+        "independent": [
             "gswin64c",
             f"-dPDFA={version}",
             "-dBATCH",
