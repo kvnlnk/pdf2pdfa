@@ -1,4 +1,4 @@
-def get_gs_command(command_type:str, version:int, input_path:str, output_path:str):
+def get_gs_command(command_type: str, version: int, input_path: str, output_path: str):
     """
     Generates Ghostscript command arrays for PDF/A conversion.
 

@@ -2,6 +2,7 @@ import subprocess
 import os
 import argparse
 
+
 from config import *
 
 
@@ -19,7 +20,18 @@ parser.add_argument("-v", "--validate", type=bool, choices=[True, False], defaul
 
 args = parser.parse_args()
 
-def convert_pdf_to_pdfa(input_path, output_path):
+def convert_pdf_to_pdfa(input_path: str, output_path: str):
+    """Converts a PDF file to PDF/A format.
+
+    Args:
+        input_path (str): The path to the input PDF file.
+        output_path (str): The path to the output PDF/A file.
+
+    Returns:
+        str: The path to the output PDF/A file.
+    """
+
+    # Create output path if not provided
     if output_path is None:
         base, ext = os.path.splitext(os.path.basename(input_path))
         output_path = os.path.join(os.getcwd(), f"{base}_pdfa.pdf")
@@ -36,7 +48,14 @@ def convert_pdf_to_pdfa(input_path, output_path):
         
     return output_path
 
-def validate_pdfa(output_path):
+def validate_pdfa(output_path: str):
+    """
+    Validates the PDF/A file.
+
+    Args:
+        output_path (str): The path to the output PDF/A file.
+    """
+    
     print(f"Validating PDF/A file: {output_path}")
     validation_command = [".\\veraPDF\\verapdf.bat", output_path, "--format", "text"]
     
