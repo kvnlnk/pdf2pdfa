@@ -2,6 +2,8 @@ import subprocess
 import os
 import argparse
 
+from config import *
+
 
 parser = argparse.ArgumentParser(
     description="A simple Ghostscript-based PDF to PDF/A-1B converter written in Python. "
@@ -12,6 +14,8 @@ parser.add_argument("-i", "--input", help="Input PDF file with path")
 # Optional arguments
 parser.add_argument("-o", "--output", help="Output path for the converted PDF/A-1B file.\n Default will be the current directory + '/[input_filename]_pdfa.pdf'")
 
+parser.add_argument("-v", "--version", type=int, choices=[1, 2, 3], default=1, help="PDF/A version (1, 2, or 3). Default is 1.")
+
 args = parser.parse_args()
 
 def convert_pdf_to_pdfa(input_path, output_path):
@@ -20,25 +24,8 @@ def convert_pdf_to_pdfa(input_path, output_path):
         output_path = os.path.join(os.getcwd(), f"{base}_pdfa.pdf")
         
     # Construct the Ghostscript command
-    gs_command = [
-        "gswin64c",
-        "--permit-file-read=C:\\source\\pdf2pdfa\\srgb.icc",
-        "--permit-file-read=C:\\source\\pdf2pdfa\\PDFA_def.ps",
-        "--permit-file-read=" + input_path,
-        "-dPDFA=1",
-        "-dBATCH",
-        "-dNOPAUSE",
-        "-dNOOUTERSAVE",
-        "-dCompatibilityLevel=1.4",
-        "-dPDFACompatibilityPolicy=1",
-        "-sColorConversionStrategy=RGB",
-        "-sDEVICE=pdfwrite",
-        "-sDefaultRGBProfile=C:\\source\\pdf2pdfa\\srgb.icc",
-        f"-sOutputFile={output_path}",
-        "C:\\source\\pdf2pdfa\\PDFA_def.ps",
-        input_path
-    ]
-    
+    gs_command = get_gs_command("pdf2pdfa_with_profile", args.version, input_path, output_path)
+
     # Execute the Ghostscript command
     try:
         subprocess.run(gs_command, check=True)
