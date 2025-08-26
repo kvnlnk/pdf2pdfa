@@ -13,7 +13,6 @@ parser = argparse.ArgumentParser(
 parser.add_argument("-i", "--input", help="Input PDF file with path")
 # Optional arguments
 parser.add_argument("-o", "--output", help="Output path for the converted PDF/A-1B file.\n Default will be the current directory + '/[input_filename]_pdfa.pdf'")
-
 parser.add_argument("-v", "--version", type=int, choices=[1, 2, 3], default=1, help="PDF/A version (1, 2, or 3). Default is 1.")
 
 args = parser.parse_args()
