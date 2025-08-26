@@ -1,9 +1,11 @@
 import subprocess
 import os
 import argparse
+import logging
 
 from config import *
 
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 parser = argparse.ArgumentParser(
     description="A simple Ghostscript-based PDF to PDF/A-1B converter written in Python. "
@@ -20,7 +22,8 @@ parser.add_argument("-v", "--validate", type=bool, choices=[True, False], defaul
 args = parser.parse_args()
 
 def convert_pdf_to_pdfa(input_path: str, output_path: str):
-    """Converts a PDF file to PDF/A format.
+    """
+    Converts a PDF file to PDF/A format.
 
     Args:
         input_path (str): The path to the input PDF file.
@@ -29,22 +32,27 @@ def convert_pdf_to_pdfa(input_path: str, output_path: str):
     Returns:
         str: The path to the output PDF/A file.
     """
+    
+    logging.info(f"Converting PDF to PDF/A: {input_path} -> {output_path}")
 
     # Create output path if not provided
     if output_path is None:
+        logging.info("No output path provided. Using default naming convention in current directory.")
         base, ext = os.path.splitext(os.path.basename(input_path))
         output_path = os.path.join(os.getcwd(), f"{base}_pdfa.pdf")
         
     # Construct the Ghostscript command
+    logging.info("Constructing Ghostscript command...")
     gs_command = get_gs_command(args.type, args.pdfaVersion, input_path, output_path)
 
     # Execute the Ghostscript command
     try:
+        logging.info(f"Executing Ghostscript command...")
         subprocess.run(gs_command, check=True)
-        print(f"Successfully converted '{input_path}' to '{output_path}'")
+        logging.info(f"Successfully converted '{input_path}' to '{output_path}'")
     except subprocess.CalledProcessError as e:
-        print(f"Error occurred while converting PDF to PDF/A-1B: {e}")
-        
+        logging.error(f"Error occurred while converting PDF to PDF/A-1B: {e}")
+
     return output_path
 
 def validate_pdfa(output_path: str):
@@ -55,17 +63,20 @@ def validate_pdfa(output_path: str):
         output_path (str): The path to the output PDF/A file.
     """
     
-    print(f"Validating PDF/A file: {output_path}")
+    logging.info(f"Validating PDF/A file: {output_path}")
     validation_command = [".\\veraPDF\\verapdf.bat", output_path, "--format", "text"]
     
     try: 
         subprocess.run(validation_command, check=True)
-        print(f"Validation completed for '{output_path}'")
+        logging.info(f"Validation completed for '{output_path}'")
     except subprocess.CalledProcessError as e:
-        print(f"Error occurred while validating PDF/A file: {e}")
+        logging.error(f"Error occurred while validating PDF/A file: {e}")
 
+# Main execution
 if args.input:
-    print(f"Input file: {args.input}")
+    logging.info(f"Input file: {args.input}")
     output_path = convert_pdf_to_pdfa(args.input, args.output)
+    logging.info(f"Output file: {output_path}")
+    
     if args.validate:
         validate_pdfa(output_path)
