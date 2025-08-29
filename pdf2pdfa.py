@@ -51,7 +51,7 @@ def convert_pdf_to_pdfa(input_path: str, output_path: str):
         subprocess.run(gs_command, check=True)
         logging.info(f"Successfully converted '{input_path}' to '{output_path}'")
     except subprocess.CalledProcessError as e:
-        logging.error(f"Error occurred while converting PDF to PDF/A-1B: {e}")
+        logging.error(f"Error occurred while converting PDF to PDF/A-{args.pdfaVersion}B: {e}")
 
     return output_path
 
