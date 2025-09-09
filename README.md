@@ -4,7 +4,7 @@ A simple Ghostscript-based PDF to PDF/A-1B converter written in Python with vali
 ## Requirements
 
 - A recent version of Python (at least [3.12.6](https://www.python.org/downloads/release/python-3126/))
-- A recent version of Ghostscript (at least Ghostscript [10.05.1](https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download/gs10051/ghostpdl-10.05.1.tar.gz))
+- A recent version of Ghostscript (at least Ghostscript [10.05.1](https://www.ghostscript.com/releases/gsdnld.html))
 - A recent version of Java (at least [Java 21](https://jdk.java.net/archive/))
 
 ## Installation
@@ -14,7 +14,10 @@ Just download the repository as a ZIP file and extract it, or clone the reposito
    git clone https://github.com/kvnlnk/pdf2pdfa.git
    cd pdf2pdfa
    ```
-
+If its not working due to paths exceeding 260 characters, you can try to move the folder closer to the root of your drive (e.g. `C:\pdf2pdfa`) or enable long paths with the following command if you have Git version 2.10 or higher: 
+   ```bash
+  git config --system core.longpaths true
+   ```
 ## Usage
 Take the PDF file you want to convert and run the following command:
 ```bash
