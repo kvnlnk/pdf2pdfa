@@ -3,11 +3,14 @@ import os
 import argparse
 import logging
 
-from gs_utils import get_gs_command
+from gs_utils import get_gs_command, replace_icc_path, cleanup_temp_file
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
+
+current_working_dir = os.path.dirname(os.path.abspath(__file__))
+logging.info(f"Current working directory: {current_working_dir}")
 
 parser = argparse.ArgumentParser(
     description="A simple Ghostscript-based PDF to PDF/A-1B converter written in Python. "
@@ -72,9 +75,25 @@ def convert_pdf_to_pdfa(input_path: str, output_path: str):
         base, ext = os.path.splitext(os.path.basename(input_path))
         output_path = os.path.join(os.getcwd(), f"{base}_pdfa.pdf")
 
-    # Construct the Ghostscript command
     logging.info("Constructing Ghostscript command...")
-    gs_command = get_gs_command(args.type, args.pdfaVersion, input_path, output_path)
+
+    icc_file_path = os.path.join(current_working_dir, "resources\\srgb.icc")
+    ps_file_path = os.path.join(current_working_dir, "resources\\PDFA_def.ps")
+
+    logging.info("Creating temporary PostScript file with ICC profile path...")
+    temp_ps_file_path = replace_icc_path(
+        ps_file_path=ps_file_path, icc_file_name=icc_file_path
+    )
+    logging.info(f"Temporary PostScript file created at: {temp_ps_file_path}")
+
+    gs_command = get_gs_command(
+        command_type=args.type,
+        version=args.pdfaVersion,
+        icc_profile_path=os.path.join(current_working_dir, icc_file_path),
+        ps_file_path=temp_ps_file_path,
+        input_path=input_path,
+        output_path=output_path,
+    )
 
     # Execute the Ghostscript command
     try:
@@ -85,6 +104,8 @@ def convert_pdf_to_pdfa(input_path: str, output_path: str):
         logging.error(
             f"Error occurred while converting PDF to PDF/A-{args.pdfaVersion}B: {e}"
         )
+    finally:
+        cleanup_temp_file(temp_ps_file_path)
 
     return output_path
 
