@@ -3,7 +3,7 @@ import os
 import argparse
 import logging
 
-from config import get_gs_command
+from gs_utils import get_gs_command
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
