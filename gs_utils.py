@@ -8,13 +8,22 @@ logging.basicConfig(
 )
 
 
-def get_gs_command(command_type: str, version: int, input_path: str, output_path: str):
+def get_gs_command(
+    command_type: str,
+    version: int,
+    icc_profile_path: str,
+    ps_file_path: str,
+    input_path: str,
+    output_path: str,
+) -> list:
     """
     Generates Ghostscript command arrays for PDF/A conversion.
 
     Args:
         command_type (str): The type of Ghostscript command to generate.
         version (int): The version of PDF/A to generate.
+        icc_profile_path (str): The path to the ICC profile file.
+        ps_file_path (str): The path to the PostScript file.
         input_path (str): The path to the input PDF file.
         output_path (str): The path to the output PDF/A file.
 
@@ -28,8 +37,8 @@ def get_gs_command(command_type: str, version: int, input_path: str, output_path
     commands = {
         "profile": [
             "gswin64c",
-            "--permit-file-read=C:\\source\\pdf2pdfa\\srgb.icc",
-            "--permit-file-read=C:\\source\\pdf2pdfa\\PDFA_def.ps",
+            f"--permit-file-read={icc_profile_path}",
+            f"--permit-file-read={ps_file_path}",
             f"--permit-file-read={input_path}",
             f"-dPDFA={version}",
             "-dBATCH",
@@ -39,9 +48,9 @@ def get_gs_command(command_type: str, version: int, input_path: str, output_path
             "-dPDFACompatibilityPolicy=1",
             "-sColorConversionStrategy=RGB",
             "-sDEVICE=pdfwrite",
-            "-sDefaultRGBProfile=C:\\source\\pdf2pdfa\\srgb.icc",
+            f"-sDefaultRGBProfile={icc_profile_path}",
             f"-sOutputFile={output_path}",
-            "C:\\source\\pdf2pdfa\\PDFA_def.ps",
+            ps_file_path,
             input_path,
         ],
         "independent": [
@@ -77,15 +86,16 @@ def replace_icc_path(ps_file_path: str, icc_file_name: str) -> str:
     Returns:
         str: The path to the temporary PostScript file with the replaced ICC profile path.
     """
-    current_working_dir = os.getcwd()
+    current_working_dir = os.path.dirname(os.path.abspath(__file__))
 
     # Read ps-file
     with open(ps_file_path, "r") as file:
         file_content = file.read()
 
-    file_content = file_content.replace(
-        "ICC_PROFILE_PATH", os.path.join(current_working_dir, icc_file_name)
+    ICC_PROFILE_PATH = os.path.join(current_working_dir, icc_file_name).replace(
+        "\\", "/"
     )
+    file_content = file_content.replace("ICC_PROFILE_PATH", ICC_PROFILE_PATH)
 
     # Write to a temporary file
     with tempfile.NamedTemporaryFile(
@@ -97,7 +107,7 @@ def replace_icc_path(ps_file_path: str, icc_file_name: str) -> str:
     return temp_file_path
 
 
-def cleanup_temp_file(file_path: str):
+def cleanup_temp_file(file_path: str) -> None:
     """
     Cleans up the temporary PostScript file.
 
